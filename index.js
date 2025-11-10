@@ -30,19 +30,36 @@ async function run() {
     await client.connect();
 
     const database = client.db("DishDive_DB");
-    const foodCollection = database.collection("foods");
+    const reviewCollection = database.collection("reviews");
 
     // post
-    app.post("/foods", async (req, res) => {
-      const newFoods = req.body;
-      const result = await foodCollection.insertOne(newFoods);
+    app.post("/reviews", async (req, res) => {
+      const newReviews = req.body;
+      const result = await reviewCollection.insertOne(newReviews);
       res.send(result);
     });
+
+    // Update
+    app.patch("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedReviews = req.body;
+      const query = { _id: new ObjectId(id) };
+      const update = {
+        $set: {
+          name: updatedReviews.name,
+          price: updatedReviews,
+          price,
+        },
+      };
+      const result = await reviewCollection.updateOne(query, update);
+      res.send(result);
+    });
+
     // Delete
-    app.delete("/foods/:id", async (req, res) => {
+    app.delete("/reviews/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await foodCollection.deleteOne(query);
+      const result = await reviewCollection.deleteOne(query);
       res.send(result);
     });
     await client.db("admin").command({ ping: 1 });
