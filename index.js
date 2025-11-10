@@ -32,6 +32,21 @@ async function run() {
     const database = client.db("DishDive_DB");
     const reviewCollection = database.collection("reviews");
 
+    // get
+    app.get("/reviews", async (req, res) => {
+      const cursor = reviewCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // sigle get
+    app.get("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await reviewCollection.findOne(query);
+      res.send(result);
+    });
+
     // post
     app.post("/reviews", async (req, res) => {
       const newReviews = req.body;
