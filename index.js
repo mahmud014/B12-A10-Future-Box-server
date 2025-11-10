@@ -31,10 +31,16 @@ async function run() {
 
     const database = client.db("DishDive_DB");
     const reviewCollection = database.collection("reviews");
+    const favCollection = database.collection("favorites");
 
     // get
     app.get("/reviews", async (req, res) => {
-      const cursor = reviewCollection.find();
+      const id = req.query.id;
+      const query = {};
+      if (id) {
+        query._id = id;
+      }
+      const cursor = reviewCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -61,9 +67,11 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const update = {
         $set: {
-          name: updatedReviews.name,
-          price: updatedReviews,
-          price,
+          food_name: updatedReviews.food_name,
+          restaurant_name: updatedReviews.restaurant_name,
+          rating: updatedReviews.rating,
+          price: updatedReviews.price,
+          review_text: updatedReviews.review_text,
         },
       };
       const result = await reviewCollection.updateOne(query, update);
@@ -77,11 +85,69 @@ async function run() {
       const result = await reviewCollection.deleteOne(query);
       res.send(result);
     });
+
+    //  favorites realted APIs
+
+    // get
+    app.get("/favorites", async (req, res) => {
+      const userEmail = req.query.userEmail;
+      const query = {};
+      if (userEmail) {
+        query.userEmail = userEmail;
+      }
+      const cursor = favCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // single get
+
+    app.get("/favorites/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await favCollection.findOne(query);
+      res.send(result);
+    });
+
+    // post
+    app.post("/favorites", async (req, res) => {
+      const newFavorite = req.body;
+      const result = await favCollection.insertOne(newFavorite);
+      res.send(result);
+    });
+
+    // Update
+
+    app.patch("/favorites/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateFavorite = req.body;
+      const query = { _id: new ObjectId(id) };
+      const update = {
+        $set: {
+          food_name: updateFavorite.food_name,
+          restaurant_name: updateFavorite.restaurant_name,
+          rating: updateFavorite.rating,
+          price: updateFavorite.price,
+          review_text: updateFavorite.review_text,
+        },
+      };
+      const result = await favCollection.updateOne(query, update);
+      res.send(result);
+    });
+
+    // delete
+    app.delete("/favorites/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await favCollection.deleteOne(query);
+      res.send(result);
+    });
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
+    // await client.close();
   }
 }
 run().catch(console.dir);
