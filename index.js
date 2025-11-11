@@ -32,6 +32,7 @@ async function run() {
     const database = client.db("DishDive_DB");
     const reviewCollection = database.collection("reviews");
     const favCollection = database.collection("favorites");
+    const sliderCollection = database.collection("slider_db");
 
     // get
     app.get("/reviews", async (req, res) => {
@@ -142,6 +143,14 @@ async function run() {
       const result = await favCollection.deleteOne(query);
       res.send(result);
     });
+
+    // slider
+    app.get("/sliderCollection", async (req, res) => {
+      const cursor = sliderCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
