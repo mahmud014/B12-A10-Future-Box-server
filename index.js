@@ -34,6 +34,7 @@ async function run() {
     const favCollection = database.collection("favorites");
     const sliderCollection = database.collection("slider_db");
     const menuCollection = database.collection("menu");
+    const jobCollection = database.collection("jobs");
 
     // get
     app.get("/reviews", async (req, res) => {
@@ -163,6 +164,13 @@ async function run() {
     // Menu
     app.get("/menu", async (req, res) => {
       const cursor = menuCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // jobCollection
+    app.get("/jobs", async (req, res) => {
+      const cursor = jobCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
