@@ -47,6 +47,14 @@ async function run() {
       res.send(result);
     });
 
+    // show-6 review
+
+    app.get("/latest-reviews", async (req, res) => {
+      const cursor = reviewCollection.find().sort({ review_date: -1 }).limit(6);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     // sigle get
     app.get("/reviews/:id", async (req, res) => {
       const id = req.params.id;
