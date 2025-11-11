@@ -33,6 +33,7 @@ async function run() {
     const reviewCollection = database.collection("reviews");
     const favCollection = database.collection("favorites");
     const sliderCollection = database.collection("slider_db");
+    const menuCollection = database.collection("menu");
 
     // get
     app.get("/reviews", async (req, res) => {
@@ -147,6 +148,13 @@ async function run() {
     // slider
     app.get("/sliderCollection", async (req, res) => {
       const cursor = sliderCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // Menu
+    app.get("/menu", async (req, res) => {
+      const cursor = menuCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
