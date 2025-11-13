@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
@@ -8,8 +9,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uri =
-  "mongodb+srv://DishDive_DB:CFFZFTLXn6pJ0I4n@datahive.5frjob8.mongodb.net/?appName=DataHive";
+const uri = `mongodb+srv://${process.env.USER_BD}:${process.env.USER_PASS}@datahive.5frjob8.mongodb.net/?appName=DataHive`;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -105,6 +105,15 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await reviewCollection.deleteOne(query);
+      res.send(result);
+    });
+    // search
+    app.get("/reviews", async (req, res) => {
+      const { search } = req.query;
+      const query = search
+        ? { food_name: { $regex: search, $options: "i" } }
+        : {};
+      const result = await reviewCollection.find(query).toArray();
       res.send(result);
     });
 
